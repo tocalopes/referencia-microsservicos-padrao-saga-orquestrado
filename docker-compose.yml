@@ -2,6 +2,58 @@ version: '3'
 
 services:
 
+  order-db:
+    image: mongo:latest
+    container_name: order-db
+    restart: always
+    networks:
+      - orchestrator-saga
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: 123456
+    ports:
+      - "27017:27017"
+
+  product-db:
+    image: postgres:latest
+    container_name: product-db
+    restart: always
+    networks:
+      - orchestrator-saga
+    environment:
+      POSTGRES_USER: postgress
+      POSTGRES_PASSWORD: postgress
+      POSTGRES_DB: product-db
+    ports:
+      - "5432:5432"
+
+  payment-db:
+    image: postgres:latest
+    container_name: payment-db
+    restart: always
+    networks:
+      - orchestrator-saga
+    environment:
+      POSTGRES_USER: postgress
+      POSTGRES_PASSWORD: postgress
+      POSTGRES_DB: payment-db
+    ports:
+      - "5433:5432"
+
+  inventory-db:
+    image: postgres:latest
+    container_name: inventory-db
+    restart: always
+    networks:
+      - orchestrator-saga
+    environment:
+      POSTGRES_USER: postgress
+      POSTGRES_PASSWORD: postgress
+      POSTGRES_DB: inventory-db
+    ports:
+      - "5434:5432"
+
+
   kafka:
     container_name: kafka
     image: obsidiandynamics/kafka
@@ -23,23 +75,44 @@ services:
     volumes:
       - ./data/kafka/data:/var/lib/kafka/data
 
+
   redpanda-console:
-    container_name: redpanda
-    image: docker.redpanda.com/vectorized/console:latest
+    image: docker.redpanda.com/redpandadata/console:v2.3.8
     restart: on-failure
     entrypoint: /bin/sh
     command: -c "echo \"$$CONSOLE_CONFIG_FILE\" > /tmp/config.yml; /app/console"
-    ports:
-      - "8081:8080"
-    networks:
-      - orchestrator-saga
     environment:
       CONFIG_FILEPATH: /tmp/config.yml
       CONSOLE_CONFIG_FILE: |
         kafka:
           brokers: ["kafka:29092"]
+    ports:
+      - "8081:8080"
     depends_on:
-      - "kafka"
+      - kafka
+    networks:
+      - orchestrator-saga
+
+#  redpanda-console:
+#    container_name: redpanda
+#    image:  docker.redpanda.com/redpandadata/redpanda:latest
+#    restart: on-failure
+#    entrypoint: /bin/sh
+#    command: -c "echo \"$$CONSOLE_CONFIG_FILE\" > /tmp/config.yml; /app/console"
+#    ports:
+#      - "8081:8080"
+#    networks:
+#      - orchestrator-saga
+#    environment:
+#      CONFIG_FILEPATH: /tmp/config.yml
+#      CONSOLE_CONFIG_FILE: |
+#        kafka:
+#          brokers: ["kafka:29092"]
+#    depends_on:
+#      - "kafka"
+
+
+
 
 networks:
   orchestrator-saga:
