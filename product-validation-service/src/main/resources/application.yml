@@ -17,3 +17,18 @@ spring:
             hibernate:
               dialect: org.hibernate.dialect.PostgreSQLDialect
             format_sql: true
+    kafka:
+        bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+        topic:
+          product-success: "product-validation-success"
+          product-fail: "product-validation-fail"
+          orchestrator: "orchestrator"
+        consumer:
+          group-id: "product-validation-group"
+          auto-offset-reset: "latest"
+
+logging:
+  level:
+    org:
+      apache:
+        kafka: OFF

@@ -3,5 +3,21 @@ server:
 
 spring:
   data:
-    database: admin
-    uri: ${MONGO_DB_URI:mongodb://admin:123456@localhost:27017}
+    mongodb:
+      database: admin
+      uri: ${MONGO_DB_URI:mongodb://admin:123456@localhost:27017}
+    kafka:
+        bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+        topic:
+          notify-ending: "notify-ending"
+          start-saga: "start-saga"
+        consumer:
+          group-id: "order-group"
+          auto-offset-reset: "latest"
+
+
+logging:
+    level:
+        org:
+          apache:
+            kafka: OFF

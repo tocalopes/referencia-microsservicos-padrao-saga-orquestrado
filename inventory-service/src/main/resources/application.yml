@@ -18,3 +18,15 @@ server:
           hibernate:
             dialect: org.hibernate.dialect.PostgreSQLDialect
           format_sql: true
+    kafka:
+        bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+        topic:
+          inventory-success: "inventory-succes"
+          inventory-fail: "inventory-fail"
+          orchestrator: "orchestrator"
+
+logging:
+  level:
+    org:
+      apache:
+        kafka: OFF
