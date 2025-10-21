@@ -2,6 +2,7 @@ package br.com.microservices.orchestrated.orderservice.config;
 
 
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.config.TopicBuilder;
 import org.springframework.kafka.core.*;
 
 import java.util.HashMap;
@@ -29,6 +31,15 @@ public class Kafka {
     @Value("spring.kafka.consumer.auto-offset-reset")
     private String autoOffsetReset;
 
+    @Value("spring.kafka.topic.start-saga")
+    private String startSagaTopic;
+
+    @Value("spring.kafka.topic.notify-ending")
+    private String notifySagaTopic;
+
+    private static final Integer PARTITION_COUNT = 1;
+    private static final Integer REPLICA_COUNT = 1;
+
     @Bean
     public ProducerFactory<String, String> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
@@ -45,7 +56,7 @@ public class Kafka {
     }
 
     @Bean
-    public ConsumerFactory<String,String> consumerFactory() {
+    public ConsumerFactory<String, String> consumerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(
                 ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
@@ -66,7 +77,26 @@ public class Kafka {
     }
 
     @Bean
-    public KafkaTemplate<String,String> kafkaTemplate(ProducerFactory<String,String> producerFactory) {
+    public KafkaTemplate<String, String> kafkaTemplate(ProducerFactory<String, String> producerFactory) {
         return new KafkaTemplate<>(producerFactory);
     }
+
+    public NewTopic buildTopic(String name) {
+        return TopicBuilder
+                .name(name)
+                .replicas(REPLICA_COUNT)
+                .partitions(PARTITION_COUNT)
+                .build();
+    }
+
+    @Bean
+    public NewTopic startSagaTopic() {
+        return buildTopic(startSagaTopic);
+    }
+
+    @Bean
+    public NewTopic notifyEndingTopic() {
+        return buildTopic(notifySagaTopic);
+    }
 }
+ca
