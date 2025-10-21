@@ -4,11 +4,6 @@ server:
 spring:
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
-    topic:
-      create-order: "orchestrator"
-      order-created: "finish-success"
-      payment-processed: "finish-fail"
-      inventory-updated: "notify-ending"
     consumer:
       group-id: "orchestrator-group"
       auto-offset-reset: "latest"
